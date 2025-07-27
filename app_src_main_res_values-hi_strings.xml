@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">कॉल असिस्टेंट</string>
+    <string name="enable_assistant">कॉल असिस्टेंट सक्रिय करें</string>
+    <string name="auto_answer">स्वचालित उत्तर</string>
+    <string name="choose_rings">रिंग्स के बाद उत्तर दें</string>
+</resources>

@@ -1,0 +1,21 @@
+package com.example.callassistant
+
+import android.os.Bundle
+import android.widget.Switch
+import android.widget.Spinner
+import androidx.appcompat.app.AppCompatActivity
+
+class SettingsActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_settings)
+
+        val assistantSwitch = findViewById<Switch>(R.id.switchAssistant)
+        val autoAnswerSwitch = findViewById<Switch>(R.id.switchAutoAnswer)
+        val ringSpinner = findViewById<Spinner>(R.id.spinnerRingCount)
+
+        // Logic for saving/loading settings as per user preference
+        // You can use SharedPreferences for storing values
+    }
+}
