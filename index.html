@@ -1,24 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>call-me-hindi-offline</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Autometa - व्यक्तिगत कॉल सहायक</title>
+    <meta name="description" content="आपका निजी कॉल असिस्टेंट - हिंदी में बात करता है और संदेश सेव करता है" />
+    <meta name="author" content="Autometa" />
+    <meta name="theme-color" content="#3366ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Autometa" />
 
-    <meta property="og:title" content="call-me-hindi-offline" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicons and App Icons -->
+    <link rel="icon" href="/lovable-uploads/app-icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/lovable-uploads/app-icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/lovable-uploads/app-icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/lovable-uploads/app-icon-512.png" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Autometa - व्यक्तिगत कॉल सहायक" />
+    <meta property="og:description" content="आपका निजी कॉल असिस्टेंट - हिंदी में बात करता है और संदेश सेव करता है" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/lovable-uploads/screenshot-mobile.png" />
 
+    <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:image" content="/lovable-uploads/screenshot-mobile.png" />
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed') {
+                    if (navigator.serviceWorker.controller) {
+                      // New update available
+                      if (confirm('नया अपडेट उपलब्ध है। रीलोड करें?')) {
+                        window.location.reload();
+                      }
+                    }
+                  }
+                });
+              });
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+
+      // PWA Install Banner
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install banner after 3 seconds
+        setTimeout(() => {
+          if (deferredPrompt && !window.matchMedia('(display-mode: standalone)').matches) {
+            const installBanner = document.createElement('div');
+            installBanner.style.cssText = `
+              position: fixed;
+              top: 20px;
+              left: 20px;
+              right: 20px;
+              background: #3366ff;
+              color: white;
+              padding: 15px;
+              border-radius: 10px;
+              box-shadow: 0 4px 20px rgba(51, 102, 255, 0.3);
+              z-index: 9999;
+              text-align: center;
+              font-family: system-ui, -apple-system, sans-serif;
+            `;
+            installBanner.innerHTML = `
+              <div style="margin-bottom: 10px;">📱 Autometa को अपने होम स्क्रीन पर जोड़ें!</div>
+              <button onclick="installPWA()" style="background: white; color: #3366ff; border: none; padding: 8px 16px; border-radius: 5px; font-weight: bold; margin-right: 10px;">इंस्टॉल करें</button>
+              <button onclick="this.parentElement.remove()" style="background: transparent; color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px;">बाद में</button>
+            `;
+            document.body.appendChild(installBanner);
+          }
+        }, 3000);
+      });
+
+      window.installPWA = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`User response to the install prompt: ${outcome}`);
+          deferredPrompt = null;
+          document.querySelector('div[style*="position: fixed"]')?.remove();
+        }
+      };
+    </script>
   </body>
 </html>
